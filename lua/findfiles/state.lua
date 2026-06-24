@@ -13,5 +13,6 @@ Options = {
 OptionValues = {}
 
 vim.defer_fn(function()
-	print("here")
-end, 1000)
+	local ui = require("findfiles.ui")
+	local win = ui.createWindow()
+end, 100)
