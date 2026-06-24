@@ -15,24 +15,36 @@ local function updateBuffer()
 		table.insert(lines, line)
 	end
 
+	vim.bo[buf].modifiable = true
 	vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+	vim.bo[buf].modifiable = false
 	return lines
 end
 
 local function createWindow()
 	local lines = updateBuffer()
-	-- vim.o.linespace
 
 	local win = vim.api.nvim_open_win(buf, true, {
 		relative = "editor",
 		width = 24,
 		height = #lines,
-		row = math.floor(vim.o.winwidth),
+		row = math.floor((vim.o.lines - #lines) / 3),
 		col = math.floor((vim.o.columns - 24) / 2),
 		style = "minimal",
-		border = "single",
+		-- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+		border = "rounded",
+		title = " Find Files ",
+		title_pos = "center",
 		focusable = true,
 	})
+
+	vim.wo[win].cursorline = false
+	vim.wo[win].cursorcolumn = false
+	vim.wo[win].number = false
+	vim.wo[win].signcolumn = "no"
+	vim.bo[buf].modifiable = false
+	vim.wo[win].winblend = 25
+	vim.wo[win].winhl = "Normal:NormalFloat,FloatBorder:FloatBorder,Cursor:NormalFloat"
 
 	return win
 end
