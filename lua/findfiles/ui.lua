@@ -1,32 +1,45 @@
 local buf = vim.api.nvim_create_buf(false, true)
+local win = 0
+
+local state = require("findfiles.state")
 
 ---@return string[]
 local function updateBuffer()
 	local lines = {
 		"options:",
 	}
+	local footer = {
+		"",
+		"enter) submit",
+		"esc  ) cancel",
+	}
 
-	for _, opt in ipairs(Options) do
+	for _, opt in ipairs(state.Options) do
 		local line = ""
 		line = line .. opt.key .. ") "
 		line = line .. opt.field .. ": "
-		line = line .. tostring(OptionValues[opt.field] or false)
+		line = line .. tostring(state.OptionValues[opt.field] or false)
 
+		table.insert(lines, line)
+	end
+
+	for _, line in ipairs(footer) do
 		table.insert(lines, line)
 	end
 
 	vim.bo[buf].modifiable = true
 	vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 	vim.bo[buf].modifiable = false
+
 	return lines
 end
 
 local function createWindow()
 	local lines = updateBuffer()
 
-	local win = vim.api.nvim_open_win(buf, true, {
+	win = vim.api.nvim_open_win(buf, true, {
 		relative = "editor",
-		width = 24,
+		width = 32,
 		height = #lines,
 		row = math.floor((vim.o.lines - #lines) / 3),
 		col = math.floor((vim.o.columns - 24) / 2),
@@ -43,21 +56,41 @@ local function createWindow()
 	vim.wo[win].number = false
 	vim.wo[win].signcolumn = "no"
 	vim.bo[buf].modifiable = false
-	vim.wo[win].winblend = 25
+	vim.wo[win].winblend = 10
 	vim.wo[win].winhl = "Normal:NormalFloat,FloatBorder:FloatBorder,Cursor:NormalFloat"
 
 	return win
 end
 
-for _, opt in ipairs(Options) do
+for _, opt in ipairs(state.Options) do
 	vim.api.nvim_buf_set_keymap(buf, "n", opt.key, "", {
 		noremap = true,
 		callback = function()
-			OptionValues[opt.field] = not OptionValues[opt.field] or false
+			state.OptionValues[opt.field] = not state.OptionValues[opt.field] or false
 			updateBuffer()
 		end,
 	})
 end
+
+vim.api.nvim_buf_set_keymap(buf, "n", "<cr>", "", {
+	noremap = true,
+	callback = function()
+		state.DoFindFiles(win)
+	end,
+})
+vim.api.nvim_buf_set_keymap(buf, "n", "<space>", "", {
+	noremap = true,
+	callback = function()
+		state.DoFindFiles(win)
+	end,
+})
+
+vim.api.nvim_buf_set_keymap(buf, "n", "<esc>", "", {
+	noremap = true,
+	callback = function()
+		vim.api.nvim_win_close(win, true)
+	end,
+})
 
 return {
 	updateBuffer = updateBuffer,
