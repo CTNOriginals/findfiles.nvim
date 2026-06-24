@@ -2,6 +2,7 @@ local buf = vim.api.nvim_create_buf(false, true)
 local win = 0
 
 local state = require("findfiles.state")
+local icons = require("findfiles.icons")
 
 ---@return string[]
 local function updateBuffer()
@@ -10,8 +11,8 @@ local function updateBuffer()
 	}
 	local footer = {
 		"",
-		"enter) submit",
-		"esc  ) cancel",
+		icons.keys.NL .. ") submit",
+		icons.keys.Esc .. ") cancel",
 	}
 
 	for _, opt in ipairs(state.Options) do
