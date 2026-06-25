@@ -1,11 +1,11 @@
----@class findfilesConfig
+---@class ff.opts
 ---@field key string
 
 local M = {}
 
----@type findfilesConfig
+---@type ff.opts
 M.defaults = {
-	key = "<leader>sF",
+	key = "<leader>F",
 }
 
 return M

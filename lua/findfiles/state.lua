@@ -31,9 +31,4 @@ function M.DoFindFiles(win)
 	telescope.find_files(M.OptionValues)
 end
 
--- vim.defer_fn(function()
--- 	local ui = require("findfiles.ui")
--- 	local win = ui.createWindow()
--- end, 100)
-
 return M
