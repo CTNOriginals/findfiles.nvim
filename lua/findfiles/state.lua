@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 ---@class OptionField
 ---@field field string
@@ -14,6 +14,16 @@ M.Options = {
 
 ---@type {string: boolean}
 M.OptionValues = {}
+
+function OptionValuesString()
+	local fields = ""
+
+	for field, val in pairs(M.OptionValues) do
+		fields = fields .. field .. ": " .. tostring(val) .. "\n"
+	end
+
+	return fields
+end
 
 local telescope = require("telescope.builtin")
 function M.DoFindFiles(win)
